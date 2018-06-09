@@ -8,12 +8,16 @@ if [ "$#" -ne "1" ]; then
 fi
 
 out_dir="./output"
+
 done_dir="$out_dir/done_xps"
 err_dir="$out_dir/err_xps"
-done_log="$out_dir/done.log"
-err_log="$out_dir/err.log"
 pdf_dir="$out_dir/pdf"
 txt_dir="$out_dir/txt"
+
+done_xps2pdf_log="$out_dir/done_xps2pdf.log"
+err_xps2pdf_log="$out_dir/err_xps2pdf.log"
+done_pdf2txt_log="$out_dir/done_pdf2txt.log"
+err_pdf2txt_log="$out_dir/err_pdf2txt.log"
 
 if [ -d $src_dir ]; then
 
@@ -31,8 +35,11 @@ if [ -d $src_dir ]; then
     mkdir -p "$pdf_dir"
     mkdir -p "$txt_dir"
     mkdir -p "$err_dir"
-    touch "$done_log"
-    touch "$err_log"
+
+    touch "$done_xps2pdf_log"
+    touch "$done_pdf2txt_log"
+    touch "$err_xps2pdf_log"
+    touch "$err_pdf2txt_log"
 
     echo "Start converting xps files......"
     for f in *
@@ -45,11 +52,19 @@ if [ -d $src_dir ]; then
             xpstopdf "$f" "$pdf_dir/$fname.pdf" || echo "Error xps to pdf..."
 
             if [ -f "$pdf_dir/$fname.pdf" ]; then
-                echo "$f" >> "$done_log"
+                echo "$f" >> "$done_xps2pdf_log"
                 cp "$f" "$done_dir"
+
                 textract "$pdf_dir/$fname.pdf" >> "$txt_dir/$fname.txt"
+
+                if [ -f "$txt_dir/$fname.txt" ]; then
+                    echo "$fname.pdf" >> "$done_pdf2txt_log"
+                else
+                    echo "$fname.pdf" >> "$err_pdf2txt_log" 
+                fi
+
             else
-                echo "$f" >> "$err_log"
+                echo "$f" >> "$err_xps2pdf_log"
                 cp "$fname.xps" "$err_dir"
             fi
             ;;

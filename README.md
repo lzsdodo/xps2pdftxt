@@ -90,9 +90,9 @@
 
     ```bash
     # Only one arguments
-    bash ./run.sh <xps_dir>
+    ./run.sh <xps_dir>
     # e.g.
-    bash ./run.sh xps
+    ./run.sh xps
     ```
 
 - Output
